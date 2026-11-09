@@ -349,8 +349,12 @@ impl<S: 'static> Host<S> {
         }
         #[cfg(target_os = "windows")]
         if self.idle && steady {
+            // The next held frame waits on the frame timer rather than asking for a redraw from
+            // inside this `WM_PAINT`: Windows paints a window that re-invalidates itself ahead of
+            // the thread's other windows, so a hold renewed by changes more often than `STEADY`
+            // would leave them unpainted.
             l.steady_frame = true;
-            l.window.request_redraw();
+            l.retry = Some(now + TIMER_FRAME);
         }
         if !hidden && (!self.idle || (self.trace.is_some() && self.args.frames.is_some())) {
             // Without a running display link, macOS hands out drawables faster than the

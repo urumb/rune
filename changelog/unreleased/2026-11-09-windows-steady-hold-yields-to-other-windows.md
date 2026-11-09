@@ -1,0 +1,1 @@
+- On Windows, a window that keeps changing no longer leaves the app's other windows unpainted: the hold that keeps presenting frames after a change now schedules each one on the frame timer instead of re-invalidating from inside its own `WM_PAINT`, so another window's first frame draws while the first one animates (#317).
